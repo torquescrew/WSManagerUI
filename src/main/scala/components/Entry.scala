@@ -12,7 +12,7 @@ object Entry {
 
     def render(state: Unit, props: Unit) = {
       <.div(^.className := "main",
-        RepoItem("Stable", "/home/user/Stable"))
+        RepoItem("Stable", "/home/user/Stable"), Btn("clickme", Callback { println("i was clicked!") }))
     }
 
     def componentDidMount = Callback {

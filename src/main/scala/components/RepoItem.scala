@@ -13,6 +13,7 @@ object RepoItem {
   class Backend($: BackendScope[Props, Unit]) {
 
     def render(state: Unit, props: Props) = {
+
       <.div(^.className := "repoItem",
         <.div("Stable"),
         <.div("/home/user/Stable"))
