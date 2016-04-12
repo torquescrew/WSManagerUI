@@ -1,17 +1,56 @@
 package utils
-import org.scalajs.dom.{Event, WebSocket}
+import org.scalajs.dom.{Event, MessageEvent, WebSocket}
 
-import scala.scalajs.js.typedarray.ArrayBuffer
+import scala.scalajs.js.typedarray.{ArrayBuffer => JSArrayBuffer}
+import scala.scalajs.js
+import scala.scalajs.js.{Dynamic, JSON}
+import collection.mutable.ArrayBuffer
 
+class SocketCallback(val path: String, val callback: (String) => Unit)
 
-class Socket(webSocket: WebSocket) {
+class Socket(val webSocket: WebSocket) {
 
-  def send(data: ArrayBuffer) = webSocket.send(data)
+  def send(data: JSArrayBuffer) = webSocket.send(data)
   def send(data: String) = webSocket.send(data)
-  var onmessage = webSocket.onmessage
+
+  val callbacks = new ArrayBuffer[SocketCallback]
 
   def get(path: String, callback: (String) => Unit): Unit = {
-    
+    val obj = js.Dynamic.literal(path = path)
+
+    callbacks += new SocketCallback(path, callback)
+
+    print("sending ")
+    println(JSON.stringify(obj))
+
+    webSocket.send(JSON.stringify(obj))
+  }
+
+  webSocket.onmessage = (e: MessageEvent) => {
+    val json = tryParseAsJson(e.data)
+
+    if (json.isDefined) {
+      val path = json.get.selectDynamic("path").toString.replace("\"", "")
+      val data = json.get.selectDynamic("data").toString
+
+      callbacks.foreach((c) => {
+        if (c.path == path) {
+
+          c.callback(data)
+          //TODO: Somehow remove this callback from callbacks list.
+        }
+      })
+    }
+
+  }
+
+  def tryParseAsJson(data: Any) = {
+    try {
+      Some(JSON.parse(data.toString))
+    }
+    catch {
+      case _: Throwable => None
+    }
   }
 
 }

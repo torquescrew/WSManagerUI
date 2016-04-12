@@ -4,7 +4,11 @@ import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB}
 import org.scalajs.dom.{Event, WebSocket}
 import org.scalajs.jquery.jQuery
+
+import scala.scalajs.js
 import utils.Socket
+
+import scala.scalajs.js.JSON
 
 /**
   * Created by user on 10/04/16.
@@ -28,11 +32,19 @@ object Entry {
 //      })
       val ws = $.props.runNow().webSocket
 
-      ws.send("message from entry")
+//      ws.send("message from entry")
 
-      ws.onmessage = (e: Event) => {
+//      val obj = js.Dynamic.literal(path = "repos")
+//      println(JSON.stringify(obj))
 
-      }
+      ws.get("repos", (result) => {
+        print("We get a result: ")
+        println(result)
+      })
+
+//      ws.onmessage = (e: Event) => {
+//
+//      }
 
     }
   }
