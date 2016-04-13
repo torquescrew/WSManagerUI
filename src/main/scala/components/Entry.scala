@@ -27,24 +27,12 @@ object Entry {
     def componentDidMount = Callback {
       println("componentDidMount")
 
-//      jQuery.getJSON("/repos", success = (data: Any) => {
-//        println(data)
-//      })
       val ws = $.props.runNow().webSocket
-
-//      ws.send("message from entry")
-
-//      val obj = js.Dynamic.literal(path = "repos")
-//      println(JSON.stringify(obj))
 
       ws.get("repos", (result) => {
         print("We get a result: ")
         println(result)
       })
-
-//      ws.onmessage = (e: Event) => {
-//
-//      }
 
     }
   }

@@ -13,7 +13,7 @@ class Socket(val webSocket: WebSocket) {
   def send(data: JSArrayBuffer) = webSocket.send(data)
   def send(data: String) = webSocket.send(data)
 
-  val callbacks = new ArrayBuffer[SocketCallback]
+  var callbacks = new ArrayBuffer[SocketCallback]
 
   def get(path: String, callback: (String) => Unit): Unit = {
     val obj = js.Dynamic.literal(path = path)
@@ -30,18 +30,19 @@ class Socket(val webSocket: WebSocket) {
     val json = tryParseAsJson(e.data)
 
     if (json.isDefined) {
+      //TODO: Make "path" more unique to avoid duplicates? What actually happens?
       val path = json.get.selectDynamic("path").toString.replace("\"", "")
       val data = json.get.selectDynamic("data").toString
 
-      callbacks.foreach((c) => {
-        if (c.path == path) {
-
-          c.callback(data)
-          //TODO: Somehow remove this callback from callbacks list.
+      callbacks = callbacks.filter((sc) => {
+        if (sc.path == path) {
+          sc.callback(data)
+          false
         }
+        else
+          true
       })
     }
-
   }
 
   def tryParseAsJson(data: Any) = {
@@ -52,9 +53,7 @@ class Socket(val webSocket: WebSocket) {
       case _: Throwable => None
     }
   }
-
 }
-
 
 
 /**
