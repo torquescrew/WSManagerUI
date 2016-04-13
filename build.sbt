@@ -16,6 +16,8 @@ jsDependencies += "org.webjars" % "jquery" % "2.1.4" / "2.1.4/jquery.js"
 // core = essentials only. No bells or whistles.
 libraryDependencies += "com.github.japgolly.scalajs-react" %%% "core" % "0.10.4"
 
+libraryDependencies += "com.lihaoyi" %%% "upickle" % "0.3.9"
+
 // React JS itself (Note the filenames, adjust as needed, eg. to remove addons.)
 jsDependencies ++= Seq(
 

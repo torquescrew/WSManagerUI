@@ -8,7 +8,7 @@ import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 object RepoItem {
 
 //  case class State()
-  case class Props(repoName: String, path: String)
+  case class Props(name: String, path: String)
 
   class Backend($: BackendScope[Props, Unit]) {
 
@@ -25,5 +25,5 @@ object RepoItem {
     .renderBackend[Backend]
     .build
 
-  def apply(repoName: String, path: String) = component(Props(repoName, path))
+  def apply(name: String, path: String) = component(Props(name, path))
 }

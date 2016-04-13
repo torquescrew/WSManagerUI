@@ -4,6 +4,7 @@ import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB}
 import org.scalajs.dom.{Event, WebSocket}
 import org.scalajs.jquery.jQuery
+import upickle.default._
 
 import scala.scalajs.js
 import utils.Socket
@@ -15,13 +16,26 @@ import scala.scalajs.js.JSON
   */
 object Entry {
 
+  case class State(repos: Seq[Map[String, String]])
   case class Props(webSocket: Socket)
 
-  class Backend($: BackendScope[Props, Unit]) {
+  class Backend($: BackendScope[Props, State]) {
 
-    def render(state: Unit, props: Props) = {
+    def render(state: State, props: Props) = {
+      println("render")
+
+      state.repos.foreach((r) => {
+        r.foreach((e) => println(e))
+
+      })
+
+      //TODO: RepoItem can't have multiple instances.
+      val items = state.repos.map((r) => {
+        RepoItem(r("name"), r("path"))
+      })
+
       <.div(^.className := "main",
-        RepoItem("Stable", "/home/user/Stable"), Btn("clickme", Callback { println("i was clicked!") }))
+        items, Btn("clickme", Callback { println("i was clicked!") }))
     }
 
     def componentDidMount = Callback {
@@ -30,14 +44,20 @@ object Entry {
       val ws = $.props.runNow().webSocket
 
       ws.get("repos", (result) => {
+
         print("We get a result: ")
         println(result)
+
+        val res = read[Map[String, Seq[Map[String, String]]]](result)
+
+        $.setState(State(res("repos"))).runNow()
       })
 
     }
   }
 
   val component = ReactComponentB[Props]("Entry")
+    .initialState(State(Nil))
     .renderBackend[Backend]
     .componentDidMount(_.backend.componentDidMount)
     .build

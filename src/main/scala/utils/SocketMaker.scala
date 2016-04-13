@@ -36,7 +36,7 @@ class Socket(val webSocket: WebSocket) {
 
       callbacks = callbacks.filter((sc) => {
         if (sc.path == path) {
-          sc.callback(data)
+          sc.callback(data.toString)
           false
         }
         else
