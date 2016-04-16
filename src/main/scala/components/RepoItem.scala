@@ -13,10 +13,9 @@ object RepoItem {
   class Backend($: BackendScope[Props, Unit]) {
 
     def render(state: Unit, props: Props) = {
-
-      <.div(^.className := "repoItem",
-        <.div("Stable"),
-        <.div("/home/user/Stable"))
+      <.div(^.className := "repo",
+        <.div(props.name, ^.className := "repo-title"),
+        <.div(props.path, ^.className := "repo-path"))
     }
 
   }

@@ -15,8 +15,10 @@ import scala.scalajs.js.JSON
   * Created by user on 10/04/16.
   */
 object Entry {
+  type ReposList = Seq[RepoAttr]
+  type RepoAttr = Map[String, String]
 
-  case class State(repos: Seq[Map[String, String]])
+  case class State(repos: ReposList)
   case class Props(webSocket: Socket)
 
   class Backend($: BackendScope[Props, State]) {
@@ -24,18 +26,9 @@ object Entry {
     def render(state: State, props: Props) = {
       println("render")
 
-      state.repos.foreach((r) => {
-        r.foreach((e) => println(e))
-
-      })
-
-      //TODO: RepoItem can't have multiple instances.
-      val items = state.repos.map((r) => {
-        RepoItem(r("name"), r("path"))
-      })
-
       <.div(^.className := "main",
-        items, Btn("clickme", Callback { println("i was clicked!") }))
+        RepoList(state.repos),
+        Btn("New Branch", Callback { println("i was clicked!") }))
     }
 
     def componentDidMount = Callback {
@@ -48,7 +41,7 @@ object Entry {
         print("We get a result: ")
         println(result)
 
-        val res = read[Map[String, Seq[Map[String, String]]]](result)
+        val res = read[Map[String, ReposList]](result)
 
         $.setState(State(res("repos"))).runNow()
       })
